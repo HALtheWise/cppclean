@@ -43,6 +43,9 @@ try:
 except NameError:
     basestring = str
 
+# maybe_print = print
+def maybe_print(*args, **kwargs):
+    pass
 
 __author__ = 'nnorwitz@google.com (Neal Norwitz)'
 
@@ -206,6 +209,8 @@ class WarningHunter(object):
             if isinstance(node, DECLARATION_TYPES) and node.is_declaration():
                 forward_declarations[node.full_name()] = node
 
+        maybe_print("Included files:\n{}\n".format( included_files))
+
         return included_files, forward_declarations
 
     def _verify_include_files_used(self, file_uses, included_files):
@@ -241,6 +246,9 @@ class WarningHunter(object):
         file_uses = dict.fromkeys(included_files, UNUSED)
         decl_uses = dict.fromkeys(forward_declarations, UNUSED)
         symbol_table = self.symbol_table
+
+        maybe_print("Symbol table namespaces:\n{}\n".format(symbol_table.namespaces.keys()))
+        maybe_print("Symbol table None:\n{}\n".format(symbol_table.namespaces[None]))
 
         for name, node in forward_declarations.items():
             try:
@@ -452,6 +460,7 @@ class WarningHunter(object):
                                                     forward_declarations)
         if primary_header and primary_header.filename in file_uses:
             file_uses[primary_header.filename] |= USES_DECLARATION
+        maybe_print ("Uses database:\n{}\n".format(file_uses))
         self._verify_include_files_used(file_uses, included_files)
         self._verify_forward_declarations_used(forward_declarations, decl_uses,
                                                file_uses)
@@ -625,6 +634,7 @@ def get_correct_include_filename(filename, candidate_filenames):
 
 def run(filename, source, entire_ast, include_paths,
         system_include_paths, nonsystem_include_paths, quiet):
+    maybe_print("\nEntire AST: \n{}\n".format(entire_ast))
     hunter = WarningHunter(filename, source, entire_ast,
                            include_paths=include_paths,
                            system_include_paths=system_include_paths,
