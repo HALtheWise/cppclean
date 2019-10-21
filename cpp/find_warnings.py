@@ -47,6 +47,8 @@ except NameError:
 def maybe_print(*args, **kwargs):
     pass
 
+FORWARD_DECLARE_WARNING = True
+
 __author__ = 'nnorwitz@google.com (Neal Norwitz)'
 
 
@@ -223,6 +225,8 @@ class WarningHunter(object):
                         node.filename)
                     if use & USES_REFERENCE:
                         msg += '; use a forward declaration instead'
+                        if not FORWARD_DECLARE_WARNING:
+                            continue
                     self._add_warning(msg, node)
 
     def _verify_forward_declarations_used(self, forward_declarations,
